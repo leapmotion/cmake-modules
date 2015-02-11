@@ -27,6 +27,22 @@ macro(leap_find_external_libraries)
       "/opt/local/Libraries"
   )
 
+  if(NOT CMAKE_SYSTEM_NAME EQUAL CMAKE_HOST_SYSTEM_NAME)
+    find_path(HOST_EXTERNAL_LIBRARY_DIR "eigen-3.2.1/Eigen/CmakeLists.txt"
+      PATHS
+        "$ENV{EXTERNAL_LIBRARY_DIR}"
+        "$ENV{LIBRARIES_PATH}"
+        "$ENV{PATH}"
+        "/opt/local/Libraries"
+    )
+
+    if(NOT IS_DIRECTORY ${HOST_EXTERNAL_LIBRARY_DIR})
+      message(FATAL_ERROR "HOST_EXTERNAL_LIBRARY_DIR not found, please specify a folder to look for the host machine's external libraries")
+    endif()
+  else()
+    set(HOST_EXTERNAL_LIBRARY_DIR ${EXTERNAL_LIBRARY_DIR})
+  endif()
+
   if(NOT IS_DIRECTORY ${EXTERNAL_LIBRARY_DIR})
     message(FATAL_ERROR "EXTERNAL_LIBRARY_DIR not found, please specify a folder to look for external libraries")
   endif()
