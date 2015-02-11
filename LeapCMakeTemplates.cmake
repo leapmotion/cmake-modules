@@ -9,7 +9,11 @@
 
 macro(leap_find_external_libraries)
   if(BUILD_ANDROID)
-    set(_lib_suffix -android)
+    if(NOT BUILD_64_BIT)
+      set(_lib_suffix -android32)
+    else()
+      set(_lib_suffix -android64)
+    endif()
   endif()
 
   find_path(EXTERNAL_LIBRARY_DIR "eigen-3.2.1/Eigen/CmakeLists.txt"
