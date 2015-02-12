@@ -11,6 +11,13 @@ find_path(Protobuf_ROOT_DIR
   PATH_SUFFIXES protobuf-${Protobuf_FIND_VERSION}${_suffix}
                 protobuf${_suffix})
 
+find_path(Protobuf_HOST_DIR
+  NAMES include/google/protobuf/descriptor.h
+  HINTS ${HOST_EXTERNAL_LIBRARY_DIR}
+  PATH_SUFFIXES protobuf-${Protobuf_FIND_VERSION}${_suffix}
+                protobuf${_suffix}
+  NO_CMAKE_PATH)
+
 set(Protobuf_INCLUDE_DIR ${Protobuf_ROOT_DIR}/include CACHE STRING "")
 
 if(DEFINED Protobuf_LIBRARY AND NOT EXISTS ${Protobuf_LIBRARY})
@@ -32,7 +39,7 @@ if(WIN32)
   mark_as_advanced(Protobuf_LIBRARY_DEBUG)
 endif()
 
-find_program(Protobuf_protoc protoc HINTS ${Protobuf_ROOT_DIR} PATH_SUFFIXES bin${CROSS_COMPILE_EXE_TYPE})
+find_program(Protobuf_protoc protoc HINTS ${Protobuf_HOST_DIR} PATH_SUFFIXES bin${CROSS_COMPILE_EXE_TYPE} bin NO_CMAKE_PATH)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Protobuf DEFAULT_MSG

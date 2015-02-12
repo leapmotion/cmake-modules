@@ -9,10 +9,14 @@
 
 macro(leap_find_external_libraries)
   if(BUILD_ANDROID)
-    set(_lib_suffix -android)
+    if(NOT BUILD_64_BIT)
+      set(_lib_suffix -android32)
+    else()
+      set(_lib_suffix -android64)
+    endif()
   endif()
 
-  find_path(EXTERNAL_LIBRARY_DIR "eigen-3.2.1/Eigen/CmakeLists.txt"
+  find_path(EXTERNAL_LIBRARY_DIR "eigen-3.2.1/Eigen/CMakeLists.txt"
     PATHS
       "$ENV{EXTERNAL_LIBRARY_DIR}${_lib_suffix}"
       "$ENV{LIBRARIES_PATH}${_lib_suffix}"
@@ -22,6 +26,31 @@ macro(leap_find_external_libraries)
       "$ENV{LIBRARIES_PATH}"
       "/opt/local/Libraries"
   )
+
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL CMAKE_HOST_SYSTEM_NAME)
+    if(NOT BUILD_64_BIT)
+      set(_lib_suffix -x86)
+    else()
+      set(_lib_suffix -x64)
+    endif()
+
+    find_path(HOST_EXTERNAL_LIBRARY_DIR "eigen-3.2.1/Eigen/CMakeLists.txt"
+      PATHS
+      "$ENV{EXTERNAL_LIBRARY_DIR}${_lib_suffix}"
+      "$ENV{LIBRARIES_PATH}${_lib_suffix}"
+      "$ENV{PATH}"
+      "/opt/local/Libraries${_lib_suffix}"
+      "$ENV{EXTERNAL_LIBRARY_DIR}"
+      "$ENV{LIBRARIES_PATH}"
+      "/opt/local/Libraries"
+    )
+
+    if(NOT IS_DIRECTORY ${HOST_EXTERNAL_LIBRARY_DIR})
+      message(FATAL_ERROR "HOST_EXTERNAL_LIBRARY_DIR not found, please specify a folder to look for the host machine's external libraries")
+    endif()
+  else()
+    set(HOST_EXTERNAL_LIBRARY_DIR ${EXTERNAL_LIBRARY_DIR})
+  endif()
 
   if(NOT IS_DIRECTORY ${EXTERNAL_LIBRARY_DIR})
     message(FATAL_ERROR "EXTERNAL_LIBRARY_DIR not found, please specify a folder to look for external libraries")
