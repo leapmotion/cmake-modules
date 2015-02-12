@@ -16,7 +16,7 @@ macro(leap_find_external_libraries)
     endif()
   endif()
 
-  find_path(EXTERNAL_LIBRARY_DIR "eigen-3.2.1/Eigen/CmakeLists.txt"
+  find_path(EXTERNAL_LIBRARY_DIR "eigen-3.2.1/Eigen/CMakeLists.txt"
     PATHS
       "$ENV{EXTERNAL_LIBRARY_DIR}${_lib_suffix}"
       "$ENV{LIBRARIES_PATH}${_lib_suffix}"
@@ -27,14 +27,14 @@ macro(leap_find_external_libraries)
       "/opt/local/Libraries"
   )
 
-  if(NOT BUILD_64_BIT)
-    set(_lib_suffix -x86)
-  else()
-    set(_lib_suffix -x64)
-  endif()
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL CMAKE_HOST_SYSTEM_NAME)
+    if(NOT BUILD_64_BIT)
+      set(_lib_suffix -x86)
+    else()
+      set(_lib_suffix -x64)
+    endif()
 
-  if(NOT CMAKE_SYSTEM_NAME EQUAL CMAKE_HOST_SYSTEM_NAME)
-    find_path(HOST_EXTERNAL_LIBRARY_DIR "eigen-3.2.1/Eigen/CmakeLists.txt"
+    find_path(HOST_EXTERNAL_LIBRARY_DIR "eigen-3.2.1/Eigen/CMakeLists.txt"
       PATHS
       "$ENV{EXTERNAL_LIBRARY_DIR}${_lib_suffix}"
       "$ENV{LIBRARIES_PATH}${_lib_suffix}"
