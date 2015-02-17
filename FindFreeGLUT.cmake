@@ -35,7 +35,10 @@ elseif(NOT BUILD_MAC) # Linux
   if(BUILD_ANDROID)
     find_library(FreeGLUT_LIBRARY freeglut-gles2 HINTS ${FreeGLUT_ROOT_DIR}/lib)
   else()
+    #Prefer static
+    list(INSERT CMAKE_FIND_LIBRARY_SUFFIXES 0 ".a") 
     find_library(FreeGLUT_LIBRARY glut HINTS ${FreeGLUT_ROOT_DIR}/lib)
+    list(REMOVE_AT CMAKE_FIND_LIBRARY_SUFFIXES 0)
   endif()
 endif()
 
