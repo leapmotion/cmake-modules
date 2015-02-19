@@ -8,7 +8,7 @@
 # Interface Targets
 # ^^^^^^^^^^^^^^^^^
 #   NSS::NSS
-#	NSS::certdb
+#   NSS::certdb
 #   NSS::certhi
 #   NSS::crmf
 #   NSS::cryptohi
@@ -69,7 +69,7 @@ find_path(NSS_ROOT_DIR
           PATH_SUFFIXES nss-${NSS_FIND_VERSION}
                         nss)
 
-set(NSS_nss_INCLUDE_DIR ${NSS_ROOT_DIR}/include/nss)
+set(NSS_nss_INCLUDE_DIR ${NSS_ROOT_DIR}/include/nss ${NSS_ROOT_DIR}/include/nspr)
 set(NSS_nspr4_INCLUDE_DIR ${NSS_ROOT_DIR}/include/nspr)
 
 set(_required_vars NSS_ROOT_DIR NSS_nss_INCLUDE_DIR NSS_nspr4_INCLUDE_DIR)
@@ -77,7 +77,7 @@ set(_required_vars NSS_ROOT_DIR NSS_nss_INCLUDE_DIR NSS_nspr4_INCLUDE_DIR)
 include(CreateImportTargetHelpers)
 
 #Module find section
-set(_modules freebl3 nssckbi)
+set(_modules freebl3 nssckbi nspr4 nss3 nssdbm3 nssutil3 plc4 plds4 smime3 softokn3 sqlite3 ssl3)
 list(APPEND CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_SHARED_MODULE_SUFFIX})
 foreach(_lib ${_modules})
 	find_library(NSS_${_lib}_MODULE ${_lib} HINTS ${NSS_ROOT_DIR} PATH_SUFFIXES bin)
@@ -91,32 +91,28 @@ foreach(_lib ${_modules})
 endforeach()
 list(REMOVE_AT CMAKE_FIND_LIBRARY_SUFFIXES -1)
 
-#Shared library find section
-set(_shared nspr4 nss3 nssdbm3 nssutil3 plc4 plds4 smime3 softokn3 sqlite3 ssl3)
-list(APPEND CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_SHARED_LIBRARY_SUFFIX})
-foreach(_lib ${_shared})
-	find_library(NSS_${_lib}_SHARED_LIB ${_lib} HINTS ${NSS_ROOT_DIR} PATH_SUFFIXES bin)
-	list(APPEND _required_vars NSS_${_lib}_SHARED_LIB)
-	if(WIN32)
-		find_library(NSS_${_lib}_IMPORT_LIB ${_lib} HINTS ${NSS_ROOT_DIR} PATH_SUFFIXES lib)
-		list(APPEND _required_vars NSS_${_lib}_IMPORT_LIB)
-	endif()
-	if(NSS_${_lib}_SHARED_LIB)
-		set(NSS_${_lib}_FOUND TRUE)
-	endif()
-	generate_import_target(NSS_${_lib} SHARED TARGET NSS::${_lib})
-	list(APPEND NSS_INTERFACE_LIBS NSS::${_lib})
-endforeach()
-list(REMOVE_AT CMAKE_FIND_LIBRARY_SUFFIXES -1)
-
 #Static library find section
 set(_static certdb certhi crmf cryptohi dbm freebl jar nss nssb nssckfw
 			nssdbm nssdev nsspki nssutil pk11wrap pkcs7 pkcs12 pkixcertsel pkixchecker
 			pkixcrlsel pkixmodule pkixparams pkixpki pkixresults pkixstore pkixsystem
-			pkixtop pkixutil sectool smime softokn sqlite ssl 
+			pkixtop pkixutil sectool smime softokn sqlite ssl
 )
 if(WIN32)
 	list(APPEND _static nspr4_s plc4_s plds4_s zlib)
+else()
+  #On non-Windows systems, the target name cannot match the file name because
+  #the static and dynamic libraries have a name collision. We are modifying the
+  #static target name to match that of Windows where the names are different.
+  #This appends _s to the name of the targets. (e.g., nspr4 becomes nspr4_s)
+  foreach(_lib nspr4 plc4 plds4)
+    find_library(NSS_${_lib}_STATIC_LIBRARY ${_lib} HINTS ${NSS_ROOT_DIR} PATH_SUFFIXES lib lib/lib)
+    list(APPEND _required_vars NSS_${_lib}_STATIC_LIBRARY)
+    if(NSS_${_lib}_STATIC_LIBRARY)
+      set(NSS_${_lib}_STATIC_FOUND TRUE)
+    endif()
+    generate_import_target(NSS_${_lib}_STATIC STATIC TARGET NSS::${_lib}_s)
+    list(APPEND NSS_INTERFACE_LIBS NSS::${_lib}_s)
+  endforeach()
 endif()
 
 foreach(_lib ${_static})
