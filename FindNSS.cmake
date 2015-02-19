@@ -76,8 +76,17 @@ set(_required_vars NSS_ROOT_DIR NSS_nss_INCLUDE_DIR NSS_nspr4_INCLUDE_DIR)
 
 include(CreateImportTargetHelpers)
 
+set(_modules freebl3 nssckbi)
+set(_dynamic nspr4 nss3 nssdbm3 nssutil3 plc4 plds4 smime3 softokn3 sqlite3 ssl3)
+if(WIN32)
+  #On Windows we need to link with the associated .LIB import libraries
+  set(_shared ${_dynamic})
+else()
+  #Otherwise, we don't want to add a dynamic library dependency
+  list(APPEND _modules ${_dynamic})
+endif()
+
 #Module find section
-set(_modules freebl3 nssckbi nspr4 nss3 nssdbm3 nssutil3 plc4 plds4 smime3 softokn3 sqlite3 ssl3)
 list(APPEND CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_SHARED_MODULE_SUFFIX})
 foreach(_lib ${_modules})
 	find_library(NSS_${_lib}_MODULE ${_lib} HINTS ${NSS_ROOT_DIR} PATH_SUFFIXES bin)
@@ -90,6 +99,24 @@ foreach(_lib ${_modules})
 	list(APPEND NSS_INTERFACE_LIBS NSS::${_lib})
 endforeach()
 list(REMOVE_AT CMAKE_FIND_LIBRARY_SUFFIXES -1)
+
+#Shared library find section
+list(APPEND CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_SHARED_LIBRARY_SUFFIX})
+foreach(_lib ${_shared})
+       find_library(NSS_${_lib}_SHARED_LIB ${_lib} HINTS ${NSS_ROOT_DIR} PATH_SUFFIXES bin)
+       list(APPEND _required_vars NSS_${_lib}_SHARED_LIB)
+       if(WIN32)
+               find_library(NSS_${_lib}_IMPORT_LIB ${_lib} HINTS ${NSS_ROOT_DIR} PATH_SUFFIXES lib)
+               list(APPEND _required_vars NSS_${_lib}_IMPORT_LIB)
+       endif()
+       if(NSS_${_lib}_SHARED_LIB)
+               set(NSS_${_lib}_FOUND TRUE)
+       endif()
+       generate_import_target(NSS_${_lib} SHARED TARGET NSS::${_lib})
+       list(APPEND NSS_INTERFACE_LIBS NSS::${_lib})
+endforeach()
+list(REMOVE_AT CMAKE_FIND_LIBRARY_SUFFIXES -1)
+
 
 #Static library find section
 set(_static certdb certhi crmf cryptohi dbm freebl jar nss nssb nssckfw
