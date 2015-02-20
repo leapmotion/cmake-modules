@@ -25,7 +25,8 @@
 
 find_path(ZLIB_ROOT_DIR 
   NAMES include/zlib.h zlib.h
-  PATH_SUFFIXES zlib zlib-${ZLIB_FIND_VERSION} 
+  PATH_SUFFIXES zlib zlib-${ZLIB_FIND_VERSION}
+  NO_SYSTEM_ENVIRONMENT_PATH
 )
 
 find_path(ZLIB_INCLUDE_DIR zlib.h HINTS ${ZLIB_ROOT_DIR} PATH_SUFFIXES include)
