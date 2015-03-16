@@ -39,6 +39,13 @@ else()
       /opt/graphics/OpenGL/include
       /usr/X11R6/include
   )
+  
+  # Check for a 32 bit linux to add path
+  set(_linux_x86_path "")
+  if (CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(_linux_x86_path "/usr/lib/i386-linux-gnu/")
+  endif()
+  
 
   find_library(
     OpenGL_LIBRARY
@@ -46,6 +53,7 @@ else()
       GL
       MesaGL
     PATHS
+      ${_linux_x86_path}
       /opt/graphics/OpenGL/lib
       /usr/openwin/lib
       /usr/shlib /usr/X11R6/lib
@@ -56,6 +64,7 @@ else()
       GLU
       MesaGLU
     PATHS
+      ${_linux_x86_path}
       ${OpenGL_gl_LIBRARY}
       /opt/graphics/OpenGL/lib
       /usr/openwin/lib
