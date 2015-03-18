@@ -40,10 +40,17 @@ else()
       /usr/X11R6/include
   )
   
-  # Check for a 32 bit linux to add path
-  set(_linux_x86_path "")
-  if (CMAKE_SIZEOF_VOID_P EQUAL 4)
-    set(_linux_x86_path "/usr/lib/i386-linux-gnu/")
+  # Adding manual checks for 32/64 bit Linux
+  # NOTE: We are using platform flags BUILD_LINUX and BUILD_64_BIT because there
+  # are some issues with the CMAKE_SIZE_OF_VOID_P flag
+  set(_linux_path "")
+  if (BUILD_LINUX)
+    if (BUILD_64_BIT)
+      set(_linux_path "/usr/lib/x86_64-linux-gnu/")
+    else()
+      message("\nGOOD!!!\n")
+      set(_linux_path "/usr/lib/i386-linux-gnu/")
+    endif()
   endif()
   
 
@@ -53,10 +60,11 @@ else()
       GL
       MesaGL
     PATHS
-      ${_linux_x86_path}
+      ${_linux_path}
       /opt/graphics/OpenGL/lib
       /usr/openwin/lib
       /usr/shlib /usr/X11R6/lib
+    NO_CMAKE_SYSTEM_PATH
   )
   find_library(
     OpenGL_INTERFACE_LIBS
@@ -64,11 +72,12 @@ else()
       GLU
       MesaGLU
     PATHS
-      ${_linux_x86_path}
+      ${_linux_path}
       ${OpenGL_gl_LIBRARY}
       /opt/graphics/OpenGL/lib
       /usr/openwin/lib
       /usr/shlib /usr/X11R6/lib
+    NO_CMAKE_SYSTEM_PATH
   )
 
   # # On Unix OpenGL most certainly always requires X11.
