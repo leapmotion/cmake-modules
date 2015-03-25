@@ -18,5 +18,12 @@ function(fixup_qt5_targets)
   elseif(BUILD_LINUX AND NOT BUILD_ANDROID)
     set_property(TARGET Qt5::QXcbIntegrationPlugin PROPERTY INSTALL_SUBDIR platforms)
     set_property(TARGET Qt5::Gui APPEND PROPERTY INTERFACE_LINK_MODULES Qt5::QXcbIntegrationPlugin)
+
+    #The QT targets only define imported_location for the release configuration, so we have to copy it over
+    foreach(lib Core Gui Network QXcbIntegrationPlugin WebKit WebKitWidgets Quick Qml MultimediaWidgets Multimedia OpenGL PrintSupport Positioning Sensors Script)
+      get_target_property(imported_location Qt5::${lib} IMPORTED_LOCATION_RELEASE)
+      set_property(TARGET Qt5::${lib} PROPERTY IMPORTED_LOCATION ${imported_location})
+    endforeach()
+
   endif()
 endfunction()
