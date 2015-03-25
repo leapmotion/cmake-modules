@@ -88,7 +88,6 @@ function(define_post_build_resource_copy_rules)
         # Also add install rules for Linux
         if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
             get_filename_component(_dirname "${_resource}" DIRECTORY)
-            message("dirname is ${_dirname}")
             install(FILES "${_resource_base_dir}/${_resource}" DESTINATION "${CMAKE_INSTALL_PREFIX}/bin/${_dirname}")
         endif()
     endforeach()
