@@ -20,7 +20,7 @@ function(fixup_qt5_targets)
     set_property(TARGET Qt5::Gui APPEND PROPERTY INTERFACE_LINK_MODULES Qt5::QXcbIntegrationPlugin)
 
     #The QT targets only define imported_location for the release configuration, so we have to copy it over
-    foreach(lib Core Gui Network QXcbIntegrationPlugin WebKit WebKitWidgets Quick Qml MultimediaWidgets Multimedia OpenGL PrintSupport Positioning Sensors Script DBus)
+    foreach(lib Core DBus Gui Multimedia MultimediaWidgets Network OpenGL Positioning PrintSupport Qml Quick QXcbIntegrationPlugin Script Sensors Sql WebKit WebKitWidgets Widgets)
       get_target_property(imported_location Qt5::${lib} IMPORTED_LOCATION_RELEASE)
       set_property(TARGET Qt5::${lib} PROPERTY IMPORTED_LOCATION ${imported_location})
     endforeach()
