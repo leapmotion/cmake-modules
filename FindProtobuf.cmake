@@ -1,7 +1,7 @@
 include(CreateImportTargetHelpers)
 
 set(_suffix "")
-if(${USE_LIBCXX})
+if(APPLE)
   set(_suffix "-libc++")
  endif()
 
