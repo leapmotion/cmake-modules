@@ -3,6 +3,7 @@
 #the INSTALL_SUBDIR property on QWindowsIntegrationPlugin so that target_imported_libraries
 #will copy it to the correct location.  Must be called after qt5 is found
 function(fixup_qt5_targets)
+  set(_qt5_modules Core DBus Gui LinguistTools Multimedia MultimediaWidgets Network OpenGL Positioning PrintSupport Qml Quick QXcbIntegrationPlugin Script Sensors Sql WebKit WebKitWidgets Widgets)
   if(WIN32)
   	set_property(TARGET Qt5::QWindowsIntegrationPlugin PROPERTY INSTALL_SUBDIR platforms)
   	set_property(TARGET Qt5::Gui APPEND PROPERTY INTERFACE_LINK_MODULES Qt5::QWindowsIntegrationPlugin)
@@ -20,10 +21,14 @@ function(fixup_qt5_targets)
     set_property(TARGET Qt5::Gui APPEND PROPERTY INTERFACE_LINK_MODULES Qt5::QXcbIntegrationPlugin)
 
     #The QT targets only define imported_location for the release configuration, so we have to copy it over
-    foreach(lib Core DBus Gui Multimedia MultimediaWidgets Network OpenGL Positioning PrintSupport Qml Quick QXcbIntegrationPlugin Script Sensors Sql WebKit WebKitWidgets Widgets)
+    foreach(lib ${_qt5_modules} DBus QXcbIntegrationPlugin)
       get_target_property(imported_location Qt5::${lib} IMPORTED_LOCATION_RELEASE)
       set_property(TARGET Qt5::${lib} PROPERTY IMPORTED_LOCATION ${imported_location})
     endforeach()
 
   endif()
+
+  foreach(lib ${_qt5_modules})
+    mark_as_advanced(Qt5${lib}_DIR)
+  endforeach()
 endfunction()
