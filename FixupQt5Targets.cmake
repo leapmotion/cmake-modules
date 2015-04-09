@@ -21,7 +21,9 @@ function(fixup_qt5_targets)
     set_property(TARGET Qt5::Gui APPEND PROPERTY INTERFACE_LINK_MODULES Qt5::QXcbIntegrationPlugin)
 
     #The QT targets only define imported_location for the release configuration, so we have to copy it over
-    foreach(lib ${_qt5_modules} DBus QXcbIntegrationPlugin)
+    set(_qt5_modules_linux_so ${_qt5_modules} DBus QXcbIntegrationPlugin)
+    list(REMOVE_ITEM _qt5_modules_linux_so LinguistTools)
+    foreach(lib ${_qt5_modules_linux_so})
       get_target_property(imported_location Qt5::${lib} IMPORTED_LOCATION_RELEASE)
       set_property(TARGET Qt5::${lib} PROPERTY IMPORTED_LOCATION ${imported_location})
     endforeach()
