@@ -12,7 +12,7 @@ for i in ${!files[@]}; do
   file=${files[$i]##*/}
   if [[ $file =~ .*so\.[0-9]*\.[0-9]*\.[0-9]* ]] ; then
     pushd ${dirs[$i]}
-    ln -s ${file} ${file%\.[0-9]*\.[0-9]}
+    ln -sf ${file} ${file%\.[0-9]*\.[0-9]}
     popd
   fi
 done
