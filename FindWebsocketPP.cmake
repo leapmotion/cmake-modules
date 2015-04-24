@@ -17,7 +17,7 @@
 #  WebsocketPP_LIBRARY_<CONFIG>
 
 set(_suffix "")
-if(${USE_LIBCXX})
+if(APPLE)
   set(_suffix "-libc++")
 endif()
 

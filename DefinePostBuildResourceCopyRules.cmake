@@ -85,10 +85,10 @@ function(define_post_build_resource_copy_rules)
             POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_resource_base_dir}/${_resource}" "${_destination_dir}/${_resource}"
         )
+        # Also add install rules for Linux
+        if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+            get_filename_component(_dirname "${_resource}" DIRECTORY)
+            install(FILES "${_resource_base_dir}/${_resource}" DESTINATION "${CMAKE_INSTALL_PREFIX}/bin/${_dirname}")
+        endif()
     endforeach()
-
-    # Also add install rules for Linux
-    if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-        install(FILES ${_arg_RESOURCES} DESTINATION ${CMAKE_INSTALL_PREFIX})
-    endif()
 endfunction()

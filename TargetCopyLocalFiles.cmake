@@ -10,8 +10,8 @@
 #  Adds the copy command which will reference the REQUIRED_LOCAL_FILES property on the target.
 #  The copy command, while platform dependent, will iterate through the list of files, typically
 #  DLLS, and will copy them to the appropriate location for the platform.
-# ADD_LOCAL_FILES(<target> [FILES <file1> ...] | [DEBUG <file2> ..]  [RELEASE <file3> ...] )
-#  Adds files to the list of files to be copied for a target. TODO: Allow specification of a subdirectory.
+# ADD_LOCAL_FILES(<target> [DIRECTORY <directory] [FILES <file1> ...] | [DEBUG <file2> ..]  [RELEASE <file3> ...] )
+#  Adds files to the list of files to be copied for a target.  TODO: Allow specification of a subdirectory.
 
 #Helper functions for manipulating sets stored in properties.
 function(add_to_prop_set scope target property item) #success_var is an optional extra argument

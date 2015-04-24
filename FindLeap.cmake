@@ -50,7 +50,7 @@ else()
   if(${found_lib} GREATER -1)
     set(_libdir ${Leap_ROOT_DIR}/lib)
   else()
-    set(_libdir ${Leap_ROOT_DIR}/lib/libstdc++)
+    message(WARNING "Could not locate the library directory")
   endif()
 
   find_library(Leap_LIBRARY_RELEASE

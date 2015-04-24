@@ -18,14 +18,13 @@
 #  Crossroads_LIBRARY_RELEASE
 #  Crossroads_LIBRARY_DEBUG
 
-if(USE_LIBCXX)
+if(APPLE)
   set(_suffix "-libc++")
 endif()
 
 find_path(Crossroads_ROOT_DIR
   NAMES include/xs/xs.h
   PATH_SUFFIXES libxs-${Crossroads_FIND_VERSION}${_suffix}
-                libxs-${Crossroads_FIND_VERSION}
                 libxs
 )
 

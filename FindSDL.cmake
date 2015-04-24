@@ -165,16 +165,14 @@ function(select_library_type namespace)
 
 endfunction()
 
-function(find_likely_dirs package dir_list_var path_list )
-  list(REMOVE_AT ARGV 0) #pop package name
-  list(REMOVE_AT ARGV 0) #pop dir_list_var
-
+function(find_likely_dirs package dir_list_var)
   set(_dirs ${${dir_list_var}}) #make sure we're appending
 
-  foreach(_path ${ARGV})
+  foreach(_path ${ARGN})
     file(GLOB _subdirs RELATIVE ${_path} ${_path}/*)
     foreach(_subdir ${_subdirs})
-      if(IS_DIRECTORY ${_path}/${_subdir} AND _subdir MATCHES "^${package}*")
+      string(TOLOWER ${package} _lowered_package)
+      if(IS_DIRECTORY ${_path}/${_subdir} AND (_subdir MATCHES "^${package}*" OR _subdir MATCHES "^${_lowered_package}*"))
         list(APPEND _dirs ${_path}/${_subdir})
       endif()
     endforeach()
