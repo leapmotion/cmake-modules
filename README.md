@@ -6,6 +6,18 @@ CMake with the Leap API, though some of the functionality here will be helpful
 if that's what you want to do. These modules are written for CMake 3.1+, and may not
 function properly on older versions.
 
+##### Directory Layout
+* Root directory of the repo contains cmake modules created by Leap Motion.
+* cmakeleap directory contains patched cmake modules that are normally included with cmake.
+```
+# At the beginning of your CMakeLists.txt
+# Use the following to use Leap specific cmake modules and you are only using the Leap library.
+list(APPEND CMAKE_MODULE_PATH "${PATH_TO_THIS_REPO}/cmake-modules")
+
+# Add this line if you want to include the patched cmake modules.
+include(LeapWithCmake)
+```
+
 ##### Usage
 First add the cmake-module repo as a remote, so you can more easily reference it
 ```
@@ -77,7 +89,7 @@ set(CMAKE_CONFIGURATION_TYPES "Release;Debug" CACHE STRING "" FORCE) #Disables M
 set(CMAKE_INCLUDE_CURRENT_DIR ON) #essentially the same as include_directories(.) in every subdir
 set(COPY_LOCAL_FILES_NO_AUTOSCAN ON) #Only do this if you are using the TargetImportedLibraries or TargetCopyLocalFiles modules.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
+include(LeapMotionWithCmake)
 include(TargetImportedLibraries)
 #These lines are specific to how Leap organizes our external dependencies and may not apply to your project.
 include(LeapCMakeTemplates)
@@ -93,6 +105,22 @@ add_subdirectory(<Subdirectory>)
 ...
 
 verify_shared_libraries_resolved()
+
+##### Simple CMakeLists.txt without cmake module changes.
+```
+cmake_minimum_required(VERSION 3.1)
+project(<Your project name>)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules")
+set(CMAKE_CONFIGURATION_TYPES "Release;Debug" CACHE STRING "" FORCE) #Disables MinSizeRel & MaxSpeedRel
+set(CMAKE_INCLUDE_CURRENT_DIR ON) #essentially the same as include_directories(.) in every subdir
+set(COPY_LOCAL_FILES_NO_AUTOSCAN ON) #Only do this if you are using the TargetImportedLibraries or TargetCopyLocalFiles modules.
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+include(LeapMotion)
+find_package(Leap)
+
+add_<executable/library>(<Project> ${<Project>_SRC} ${<Project>_HEADERS})
+target_package(<Project> <Package> <Version> REQUIRED) #Repeat as nessecary
+target_link_libraries(<Project> ${Leap_BUILD_LIBRARIES} )
 
 ```
 
