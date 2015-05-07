@@ -6,7 +6,7 @@ CMake with the Leap API, though some of the functionality here will be helpful
 if that's what you want to do. These modules are written for CMake 3.1+, and may not
 function properly on older versions.
 
-##### Directory Layout
+##### Repo Directory Layout
 * Root directory of the repo contains cmake modules created by Leap Motion.
 * cmakeleap directory contains patched cmake modules that are normally included with cmake.
 ```
@@ -14,8 +14,11 @@ function properly on older versions.
 # Use the following to use Leap specific cmake modules and you are only using the Leap library.
 list(APPEND CMAKE_MODULE_PATH "${PATH_TO_THIS_REPO}/cmake-modules")
 
+################################################################################
 # Add this line if you want to include the patched cmake modules.
-include(LeapWithCmake)
+################################################################################
+include(LeapWithCMake)
+
 ```
 
 ##### Usage
@@ -89,7 +92,12 @@ set(CMAKE_CONFIGURATION_TYPES "Release;Debug" CACHE STRING "" FORCE) #Disables M
 set(CMAKE_INCLUDE_CURRENT_DIR ON) #essentially the same as include_directories(.) in every subdir
 set(COPY_LOCAL_FILES_NO_AUTOSCAN ON) #Only do this if you are using the TargetImportedLibraries or TargetCopyLocalFiles modules.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-include(LeapMotionWithCmake)
+
+################################################################################
+# Include patches to cmake modules. 
+################################################################################
+include(LeapWithCMake)
+
 include(TargetImportedLibraries)
 #These lines are specific to how Leap organizes our external dependencies and may not apply to your project.
 include(LeapCMakeTemplates)
@@ -106,7 +114,26 @@ add_subdirectory(<Subdirectory>)
 
 verify_shared_libraries_resolved()
 
-##### Simple CMakeLists.txt without cmake module changes.
+```
+
+##### Project's CMakeLists.txt
+```
+set(<Project>_SRC <list of files here>)
+set(<Project>_HEADERS <list of headers here>)
+add_<executable/library>(<Project> ${<Project>_SRC} ${<Project>_HEADERS})
+################################################################################
+# target_package command
+################################################################################
+target_package(<Project> <Package> <Version> REQUIRED) #Repeat as nessecary
+target_link_libraries(<Project> ... ${Leap_BUILD_LIBRARIES})
+
+
+#set target's custom build settings here
+
+#define install steps here
+
+```
+##### Simple CMakeLists.txt without patched cmake module changes and no external libraries.
 ```
 cmake_minimum_required(VERSION 3.1)
 project(<Your project name>)
@@ -115,29 +142,17 @@ set(CMAKE_CONFIGURATION_TYPES "Release;Debug" CACHE STRING "" FORCE) #Disables M
 set(CMAKE_INCLUDE_CURRENT_DIR ON) #essentially the same as include_directories(.) in every subdir
 set(COPY_LOCAL_FILES_NO_AUTOSCAN ON) #Only do this if you are using the TargetImportedLibraries or TargetCopyLocalFiles modules.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-include(LeapMotion)
-find_package(Leap)
+################################################################################
+# Find leap and include libraries. 
+################################################################################
+find_package(Leap REQUIRED)
+include_directories(${Leap_INCLUDE_DIR})
 
 add_<executable/library>(<Project> ${<Project>_SRC} ${<Project>_HEADERS})
-target_package(<Project> <Package> <Version> REQUIRED) #Repeat as nessecary
+################################################################################
+# No target package command. 
+################################################################################
 target_link_libraries(<Project> ${Leap_BUILD_LIBRARIES} )
-
-```
-
-##### Project's CMakeLists.txt
-```
-set(<Project>_SRC <list of files here>)
-set(<Project>_HEADERS <list of headers here>)
-
-add_<executable/library>(<Project> ${<Project>_SRC} ${<Project>_HEADERS})
-target_package(<Project> <Package> <Version> REQUIRED) #Repeat as nessecary
-target_link_libraries(<Project> ...)
-
-
-#set target's custom build settings here
-
-#define install steps here
-
 ```
 
 ##### Writing Find Modules
